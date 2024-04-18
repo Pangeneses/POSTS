@@ -189,61 +189,6 @@ namespace CHV4DARCHIVE
 
 	ZIP_ERROR CHV4DENCLZSS::PushLiteral()
 	{
-		if (!Found)
-		{
-			if (BitFlagPos == 8)
-			{
-				Output.back() = Output.back() & 0b11111110;
-
-				Output.push_back(*Literal.begin());
-
-				Output.push_back(*std::next(Literal.begin()));
-
-				Output.resize(Output.size() + 1);
-
-			}
-			else
-			{
-				Output.back() = (Output.back() & PackBytes[BitFlagPos]) & (*Literal.begin() >> BitFlagPos);
-
-				Output.push_back(*Literal.begin() << (8 - BitFlagPos));
-
-				Output.back() = Output.back() & (*std::next(Literal.begin()) >> (8 - (8 - BitFlagPos)));
-
-				Output.resize(Output.size() + 1);
-
-				Output.back() = Output.back() & (*std::next(Literal.begin()) << (8 - (8 - BitFlagPos)));
-
-			}
-
-		}
-		else
-		{
-			uint32_t Distance = static_cast<uint32_t>(std::distance(*Index.begin(), Window.end()));
-
-			Output.resize(Output.size() + 3);
-
-			uint32_t InPlace;
-
-			*(uint8_t*)&InPlace = PackToken[BitFlagPos];
-
-			InPlace = InPlace & Distance << ((8 - BitFlagPos) + 8 + (16 - PointerSz));
-
-			uint32_t Length = static_cast<uint32_t>(Literal.size());
-
-			InPlace = InPlace & Length << ((8 - BitFlagPos) + 8);
-
-			BitFlagPos += static_cast<uint8_t>((8 - BitFlagPos) + (16 - PointerSz) + 8);
-
-			*(uint32_t*)&Output.at(Output.size() - 5) = *(uint32_t*)&Output.at(Output.size() - 5) & InPlace;
-
-			if (BitFlagPos <= 24) Output.pop_back();
-
-			BitFlagPos = BitFlagPos + (8 - BitFlagPos);
-
-		}
-		
-		return CHV4DARCHIVE::ZIP_ERROR_SUCCEEDED;
 
 	}
 
